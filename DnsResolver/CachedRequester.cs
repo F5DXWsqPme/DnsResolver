@@ -8,7 +8,7 @@ public class CachedRequester : IRequester
     private IRequester requester = new Requester();
     private Dictionary<(String, IPAddress), (Response, DateTime, TimeSpan)> cache = new Dictionary<(String, IPAddress), (Response, DateTime, TimeSpan)>();
     private int requestsCounter = 0;
-    private readonly int maxRequestsCount = 1000;
+    private readonly int maxRequestsCount = 100;
     
     public void ResetRequestCounter()
     {
