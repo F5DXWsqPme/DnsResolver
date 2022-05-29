@@ -51,6 +51,19 @@ public class RequestIterator
             continue;
          }
 
+         Log.Logger.Debug("Checking CNAME records before all");
+         foreach (var cnameRecord in nsResponse.AuthorityRecords.Concat(nsResponse.AnswerRecords))
+         {
+            if (cnameRecord is CanonicalNameResourceRecord cnameRecordCasted)
+            {
+               foreach (var finalAddress in resolver.ResolveEnumerable(cnameRecordCasted.CanonicalDomainName.ToString()))
+               {
+                  Log.Logger.Debug($"Final address from cname: {finalAddress}");
+                  throw new ImmediatlyAnswerException(finalAddress);
+               }
+            }
+         }
+
          foreach (var nsRecord in nsResponse.AuthorityRecords.Concat(nsResponse.AnswerRecords))
          {
             if (nsRecord is NameServerResourceRecord nsRecordCasted)
@@ -85,6 +98,11 @@ public class RequestIterator
          {
             if (soaRecord is StartOfAuthorityResourceRecord soaRecordCasted)
             {
+               if (soaRecordCasted.MasterDomainName.ToString() == String.Empty)
+               {
+                  Log.Logger.Information($"Soa record with root");
+                  continue;
+               }
                Log.Logger.Debug($"Soa record {soaRecordCasted.MasterDomainName}");
                if (soaRecordCasted.MasterDomainName.ToString() == nextName)
                {

@@ -36,18 +36,18 @@ public class Resolver
             if (name == String.Empty)
             {
                 Log.Logger.Debug("Ressolving root");
-                return rootNsAddresses;
+                return new List<IPAddress>();
             }
             
             Log.Logger.Debug($"Resolving {name}");
 
             var nameSplit = name.Split(".").ToList();
-            var currentName = name;//String.Empty;
+            var currentName = String.Empty;
             var currentServers = rootNsAddresses;
 
             while (nameSplit.Count > 0)
             {
-                //currentName = nameSplit.Last() + (currentName.Length > 0 ? "." : String.Empty) + currentName;
+                currentName = nameSplit.Last() + (currentName.Length > 0 ? "." : String.Empty) + currentName;
                 nameSplit.RemoveAt(nameSplit.Count - 1);
 
                 currentServers = requestIterator.GetNextNsIpAddress(currentServers, currentName);
