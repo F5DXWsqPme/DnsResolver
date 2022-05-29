@@ -19,10 +19,22 @@ while (true)
 {
     try
     {
-        var tcpTask = Task.Run(() => server.RunTcp());
-        var udpTask = Task.Run(() => server.RunUdp());
-        tcpTask.Wait();
-        udpTask.Wait();   
+        var tcpTask = new List<Task>();
+        for (int i = 0; i < 10; i++)
+        {
+            tcpTask.Add(Task.Run(() => server.RunTcp()));
+        }
+        var udpTask = new List<Task>();
+        for (int i = 0; i < 10; i++)
+        {
+            udpTask.Add(Task.Run(() => server.RunUdp()));
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            tcpTask[i].Wait();
+            udpTask[i].Wait();
+        }
     }
     catch (Exception e)
     {
